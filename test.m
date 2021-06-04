@@ -12,7 +12,7 @@
 %             chenweikun@bit.edu.cn        
 
 nP=2;
-nK1=4;
+nK1=2;
 ntest=1;
 isdelaycons=1;
 isdelayobj=1;
