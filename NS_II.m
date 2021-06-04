@@ -13,7 +13,7 @@
 
 function [sol,x,y,r,z,objvalue,sumy,Aver_nodedelay,Aver_linkdelay,Sollinkdelay,...
     Solnodedelay,Aver_path_num,Aver_max_path_num,totalr,Aver_path_ratio,Aver_min_path_ratio] = ...
-    NS1(nP,nK1,isdelaycons,isdelayobj,originalgraphfile,virtualgraphfile,flowfile)
+    NS_II(nP,nK1,isdelaycons,isdelayobj,originalgraphfile,virtualgraphfile,flowfile)
 
 load(originalgraphfile);
 load(virtualgraphfile);
@@ -310,7 +310,7 @@ end
 
 ops = sdpsettings('solver','gurobi');
 ops.gurobi.TimeLimit = 600;
-ops.gurobi.MIPGap = 0.000;
+ops.gurobi.MIPGap = 0.001;
 
 sol = optimize([variablecons, noprovidecons, atmostonecons, xx0relationcons,...
     everyfuncons,x0yrelationcons,nodecapcons,totalcapcons,dataratecons,...

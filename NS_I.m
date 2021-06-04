@@ -11,7 +11,7 @@
 %             chenweikun@bit.edu.cn        
 
 
-function [sol,objvalue] = NS2(nP,nK1,isdelaycons,isdelayobj,...
+function [sol,objvalue] = NS_I(nP,nK1,isdelaycons,isdelayobj,...
     originalgraphfile,virtualgraphfile,flowfile)
 
 
