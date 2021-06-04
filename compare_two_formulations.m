@@ -11,7 +11,7 @@
 % Send your comments and suggestions to   
 %             chenweikun@bit.edu.cn      
 
-function comparetwoformulations(iscompactformulation,starttest,endtest)
+function compare_two_formulations(iscompactformulation,starttest,endtest)
 strname=[num2str(iscompactformulation) '-' num2str(starttest) '-' num2str(endtest)];
 objfile=['obj' strname];
 soltimefile=['soltime' strname]
