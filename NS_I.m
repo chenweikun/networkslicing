@@ -443,7 +443,6 @@ sol = optimize([variablecons, noprovidecons, atmostonecons, xx0relationcons,...
     dataratecons,atmostonelinkcons, xrzrelationcons, linkcapcons,SFCcons2,...
     mediadelaycons,linkdelaycons,nodedelaycons,E2Econs],obj,ops);
 sumy=sum(value(y));
-value(sum(theta_N))
 if sumy~=0
     objvalue=value(obj);
 else

@@ -1,0 +1,12 @@
+
+The README contains the matlab code to the paper
+
+   Optimal Network Slicing for Service-Oriented Networks with Flexible Routing and Guaranteed E2E Latency
+
+by Wei-Kun Chen, Ya-Feng Liu, Antonio De Domenico, Zhi-Quan Luo, and Yu-Hong Dai.
+(to appear in IEEE Transactions on Network and Service Management, 2021)
+
+To run the code, we need to install: 
+(i) GUROBI: https://www.gurobi.com
+(ii) YALMIP: https://yalmip.github.io/tutorial/installation
+
