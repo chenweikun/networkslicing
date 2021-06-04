@@ -22,7 +22,7 @@ fid2=fopen(soltimefile,'w+');
 for ntest=starttest:endtest
     for k=1:5
         originalgraphfile=['random_networks' '/' 'graph-' num2str(ntest) '.mat'];
-        virtualgraphfile=['random_networks' '/' 'virtualgraph' num2str(ntest) '.mat'];
+        virtualgraphfile=['random_networks' '/' 'virtualgraph-' num2str(ntest) '.mat'];
         flowfile=['random_networks' '/' 'SFCs-' num2str(ntest) '.mat'];
         
         if iscompactformulation
