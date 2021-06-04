@@ -52,15 +52,15 @@ for i=1:newnV
 end
 
 %routing variables
-lambda=sdpvar(nK,nS-1,npaircloudnodes,nP,'full');
+R=sdpvar(nK,nS-1,npaircloudnodes,nP,'full');
 z=binvar(newnL,nK,nS-1,npaircloudnodes,nP,'full');
 r=sdpvar(newnL,nK,nS-1,npaircloudnodes,nP,'full');
 
-lambda_o=sdpvar(newnV,nK,nP,'full');
+R_o=sdpvar(newnV,nK,nP,'full');
 z_o=binvar(newnL,newnV,nK,nP,'full');
 r_o=sdpvar(newnL,newnV,nK,nP,'full');
 
-lambda_d=sdpvar(newnV,nK,nP,'full');
+R_d=sdpvar(newnV,nK,nP,'full');
 z_d=binvar(newnL,newnV,nK,nP,'full');
 r_d=sdpvar(newnL,newnV,nK,nP,'full');
 
@@ -70,7 +70,7 @@ theta_N=sdpvar(nK,1);
 
 
 %bounds constraint
-variablecons=[lambda>=0,lambda_o>=0,lambda_d>=0,r>=0,r_o>=0,r_d>=0,...
+variablecons=[R>=0,R_o>=0,R_d>=0,r>=0,r_o>=0,r_d>=0,...
     theta>=0,theta_L>=0,theta_N>=0];
 
 
@@ -186,8 +186,8 @@ for k=1:nK
         addition1=0;
         addition2=0;
         for p=1:nP
-            addition1=addition1+lambda_o(v,k,p);
-            addition2=addition2+lambda_d(v,k,p);
+            addition1=addition1+R_o(v,k,p);
+            addition2=addition2+R_d(v,k,p);
         end
         dataratecons=dataratecons+[addition1==DataRate(k)*x(v,k,1)];
         dataratecons=dataratecons+[addition2==DataRate(k)*x(v,k,nS)];
@@ -200,21 +200,13 @@ for k=1:nK
         for q=1:npaircloudnodes
             addition=0;
             for p=1:nP
-                addition=addition+lambda(k,s,q,p);
+                addition=addition+R(k,s,q,p);
             end
             dataratecons=dataratecons+[addition==DataRate(k)*w(q,k,s)];
         end
     end
 end
 
-
-%at most one link can be use for a flow (k,s,p)
-atmostonelinkcons=[];
-for l=(nL+1):2:newnL
-    atmostonelinkcons=atmostonelinkcons+[z_o(l,:,:,:)+z_o(l+1,:,:,:)<=1];
-    atmostonelinkcons=atmostonelinkcons+[z_d(l,:,:,:)+z_d(l+1,:,:,:)<=1];
-    atmostonelinkcons=atmostonelinkcons+[z(l,:,:,:,:)+z(l+1,:,:,:,:)<=1];
-end
 
 %related x, r, and z
 xrzrelationcons=[];
@@ -266,14 +258,14 @@ for k=1:nK
                 addition4=addition4+z_o(incominglinks(t),v,k,:);
             end
             if i==PairC(k,1)
-                SFCcons2=SFCcons2+[addition1==lambda_o(v,k,:)];
+                SFCcons2=SFCcons2+[addition1==R_o(v,k,:)];
                 SFCcons2=SFCcons2+[addition2==ones(1,1,1,nP)*x(v,k,1)];
                 SFCcons2=SFCcons2+[addition3==zeros(1,1,1,nP)];
                 SFCcons2=SFCcons2+[addition4==zeros(1,1,1,nP)];
             elseif i==nI+v
                 SFCcons2=SFCcons2+[addition1==zeros(1,1,1,nP)];
                 SFCcons2=SFCcons2+[addition2==zeros(1,1,1,nP)];
-                SFCcons2=SFCcons2+[addition3==lambda_o(v,k,:)];
+                SFCcons2=SFCcons2+[addition3==R_o(v,k,:)];
                 SFCcons2=SFCcons2+[addition4==ones(1,1,1,nP)*x(v,k,1)];
             else
                 SFCcons2=SFCcons2+[addition1==addition3];
@@ -303,14 +295,14 @@ for k=1:nK
             end
             
             if i==nI+v
-                SFCcons2=SFCcons2+[addition1==lambda_d(v,k,:)];
+                SFCcons2=SFCcons2+[addition1==R_d(v,k,:)];
                 SFCcons2=SFCcons2+[addition2==ones(1,1,1,nP)*x(v,k,nS)];
                 SFCcons2=SFCcons2+[addition3==zeros(1,1,1,nP)];
                 SFCcons2=SFCcons2+[addition4==zeros(1,1,1,nP)];
             elseif i==PairC(k,2)
                 SFCcons2=SFCcons2+[addition1==zeros(1,1,1,nP)];
                 SFCcons2=SFCcons2+[addition2==zeros(1,1,1,nP)];
-                SFCcons2=SFCcons2+[addition3==lambda_d(v,k,:)];
+                SFCcons2=SFCcons2+[addition3==R_d(v,k,:)];
                 SFCcons2=SFCcons2+[addition4==ones(1,1,1,nP)*x(v,k,nS)];
             else
                 SFCcons2=SFCcons2+[addition1==addition3];
@@ -343,14 +335,14 @@ for k=1:nK
                 v_s_1=paircloudnodes(q,2);
                 
                 if i==(nI+v_s)
-                    SFCcons2=SFCcons2+[addition1==lambda(k,s,q,:)];
+                    SFCcons2=SFCcons2+[addition1==R(k,s,q,:)];
                     SFCcons2=SFCcons2+[addition2==ones(1,1,1,1,nP)*w(q,k,s)];
                     SFCcons2=SFCcons2+[addition3==zeros(1,1,1,1,nP)];
                     SFCcons2=SFCcons2+[addition4==zeros(1,1,1,1,nP)];
                 elseif i==(nI+v_s_1)
                     SFCcons2=SFCcons2+[addition1==zeros(1,1,1,1,nP)];
                     SFCcons2=SFCcons2+[addition2==zeros(1,1,1,1,nP)];
-                    SFCcons2=SFCcons2+[addition3==lambda(k,s,q,:)];
+                    SFCcons2=SFCcons2+[addition3==R(k,s,q,:)];
                     SFCcons2=SFCcons2+[addition4==ones(1,1,1,nP)*w(q,k,s)];
                 else
                     SFCcons2=SFCcons2+[addition1==addition3];

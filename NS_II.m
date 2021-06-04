@@ -33,7 +33,7 @@ x=binvar(newnV,nK,nS,'full');
 x0=binvar(nV,nK,nS,'full');
 
 %Routing variables
-lambda=sdpvar(nK,nS+1,nP,'full');
+R=sdpvar(nK,nS+1,nP,'full');
 r=sdpvar(newnL,nK,nS+1,nP,'full');
 z=binvar(newnL,nK,nS+1,nP,'full');
 theta=sdpvar(nK,nS+1,'full');
@@ -45,7 +45,7 @@ w1=sdpvar(newnV,nK,nS,nP,'full');
 w2=sdpvar(newnV,nK,nS,nP,'full');
 
 %bounds constraint
-variablecons=[lambda>=0,r>=0,theta>=0,w1>=0,w2>=0,theta_L>=0,theta_N>=0];
+variablecons=[R>=0,r>=0,theta>=0,w1>=0,w2>=0,theta_L>=0,theta_N>=0];
 
 
 %% VNF placement constraints
@@ -141,7 +141,7 @@ for k=1:nK
     for s=1:(nS+1)
         addition=0;
         for p=1:nP
-            addition=addition+lambda(k,s,p);
+            addition=addition+R(k,s,p);
         end
         dataratecons=dataratecons+[addition==DataRate(k)];
     end
@@ -166,8 +166,8 @@ for l=1:nL
 end
 
 %Linearized constraint
-% w1(v,k,s,p) = lambda(k,s,p)*x(v,k,s)
-% w2(v,k,s,p) = lambda(k,s+1,p)*x(v,k,s)
+% w1(v,k,s,p) = R(k,s,p)*x(v,k,s)
+% w2(v,k,s,p) = R(k,s+1,p)*x(v,k,s)
 linearizedcons=[];
 for k=1:nK
     for s=1:nS
@@ -175,10 +175,10 @@ for k=1:nK
             for v=1:newnV
                 linearizedcons=linearizedcons+[w1(v,k,s,p)<=DataRate(k)*x(v,k,s)];
                 linearizedcons=linearizedcons+[w2(v,k,s,p)<=DataRate(k)*x(v,k,s)];
-                linearizedcons=linearizedcons+[w1(v,k,s,p)<=lambda(k,s,p)];
-                linearizedcons=linearizedcons+[w2(v,k,s,p)<=lambda(k,s+1,p)];
-                linearizedcons=linearizedcons+[w1(v,k,s,p)>=DataRate(k)*x(v,k,s)+lambda(k,s,p)-DataRate(k)];
-                linearizedcons=linearizedcons+[w2(v,k,s,p)>=DataRate(k)*x(v,k,s)+lambda(k,s+1,p)-DataRate(k)];
+                linearizedcons=linearizedcons+[w1(v,k,s,p)<=R(k,s,p)];
+                linearizedcons=linearizedcons+[w2(v,k,s,p)<=R(k,s+1,p)];
+                linearizedcons=linearizedcons+[w1(v,k,s,p)>=DataRate(k)*x(v,k,s)+R(k,s,p)-DataRate(k)];
+                linearizedcons=linearizedcons+[w2(v,k,s,p)>=DataRate(k)*x(v,k,s)+R(k,s+1,p)-DataRate(k)];
             end
         end
     end
@@ -206,7 +206,7 @@ for k=1:nK
             
             if s==1
                 if i==PairC(k,1)
-                    SFCcons2=SFCcons2+[addition1==lambda(k,s,:)];
+                    SFCcons2=SFCcons2+[addition1==R(k,s,:)];
                     SFCcons2=SFCcons2+[addition2==ones(1,1,1,nP)];
                     SFCcons2=SFCcons2+[addition3==zeros(1,1,1,nP)];
                     SFCcons2=SFCcons2+[addition4==zeros(1,1,1,nP)];
@@ -224,7 +224,7 @@ for k=1:nK
                 if i==PairC(k,2)
                     SFCcons2=SFCcons2+[addition1==zeros(1,1,1,nP)];
                     SFCcons2=SFCcons2+[addition2==zeros(1,1,1,nP)];
-                    SFCcons2=SFCcons2+[addition3==lambda(k,s,:)];
+                    SFCcons2=SFCcons2+[addition3==R(k,s,:)];
                     SFCcons2=SFCcons2+[addition4==ones(1,1,1,nP)];
                 elseif i>=nI+1
                     v=i-nI;
@@ -336,7 +336,7 @@ if sumy~=0
     Solnodedelay=value(theta_N);
     valuer=value(r);
     valuez=value(z);
-    valuelambda=value(lambda);
+    valueR=value(R);
     totalr = sum(sum(sum(sum(valuer(1:nL,:,:,:)))));
     
     %value(sum(theta_N))
@@ -388,7 +388,7 @@ if sumy~=0
                 consL(2*(s-1)+1,2)=s+1;
                 consL(2*s,2)=s+1;
                 % test the data rate on each path
-                if valuelambda(k,s,1)<eps || valuelambda(k,s,2)<eps
+                if valueR(k,s,1)<eps || valueR(k,s,2)<eps
                     AllR(2*(s-1)+1)=DataRate(k);
                     AllR(2*s)=0;
                 else
@@ -398,8 +398,8 @@ if sumy~=0
                         AllR(2*(s-1)+1)=DataRate(k);
                         AllR(2*s)=0;
                     else
-                        AllR(2*(s-1)+1)=valuelambda(k,s,1);
-                        AllR(2*s)=valuelambda(k,s,2);
+                        AllR(2*(s-1)+1)=valueR(k,s,1);
+                        AllR(2*s)=valueR(k,s,2);
                     end
                 end
             end
