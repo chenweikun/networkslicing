@@ -10,3 +10,17 @@ To run the code, we need to install:
 (i) GUROBI: https://www.gurobi.com
 (ii) YALMIP: https://yalmip.github.io/tutorial/installation
 
+
+## Description of the files
+
+test.m: a simple example
+NS_I.m: the (NS-I) formulation
+NS_II.m: the (NS-II) formulation
+r_seed.mat: the random seed
+random_generated_procedure.m: a procedure to generate the random instances
+constructed_virtualgraph.m: a procedure to transform the physical graph/network to the virtual network 
+                            (called by random_generated_procedure.m)
+compare_two_formulations.m: a procedure to compare the performance the (NS-I) and (NS-II) formulations
+									 (to run the code, we need to generate the random instances first)
+paths_rates.m: a procedure to compute the number of paths and the data rates on each path
+					(called by NS_II.m)
